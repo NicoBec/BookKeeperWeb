@@ -1,0 +1,98 @@
+﻿@model IEnumerable<BookKeeperWeb.Models.Transaction>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.DescTxt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Amount)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category.Desc)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Type1.DescTxt)
+        </th>
+        <th></th>
+    </tr>
+    @{
+        double Income = 0;
+        double Expence = 0;
+        double start = 735681.85;
+    }
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DescTxt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            @if (item.Type != 3)
+            {
+                <td style="color: red">
+                    R @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+            }
+            else
+            {
+                <td style="color: green">
+                    R @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+            }
+       
+            @{
+        if (item.Type == 3)
+        {
+            Income += item.Amount;
+            start += item.Amount;
+        }
+        else
+        {
+            Expence += item.Amount;
+            start -= item.Amount;
+        }
+            }
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Desc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type1.DescTxt)
+            </td>
+            <td>
+            <td>R @Math.Round(start, 2)</td>
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+    @{
+        double Total = Math.Round((Income - Expence), 2);
+        double balance = Math.Round((735681.85 + Income - Expence), 2);
+    }
+    <tr>
+        <td>Income: R @Income</td>
+        <td>Expence:R @Expence</td>
+        <td>Total: R @Total</td>
+        <td>Total: R @balance</td>
+    </tr>
+</table>
