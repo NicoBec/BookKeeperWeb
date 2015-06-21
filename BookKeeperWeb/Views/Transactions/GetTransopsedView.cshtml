@@ -1,0 +1,58 @@
+﻿@model System.Data.DataSet
+@{
+    ViewBag.Title = "GetTransopsedView";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>GetTransopsedView</h2>
+
+<table style="width:100%" border="1">
+  
+    <tr>
+        @{
+            List<double> totals = new List<double>();
+            foreach (System.Data.DataColumn column in Model.Tables[0].Columns)
+            {
+                totals.Add(0);
+                <th>@column.ColumnName</th>
+
+            }
+        }
+    </tr>
+
+    @{
+
+        foreach (System.Data.DataRow t in Model.Tables[0].Rows)
+        {
+            int counter = 0;
+            <tr>
+                @foreach (var n in t.ItemArray)
+                {
+                    try
+                    {
+                        totals[counter] += Convert.ToDouble(n.ToString());
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    counter++;
+                    <td>@n.ToString()</td>
+                }
+            </tr>
+        }
+
+    }
+    <tr>
+        @{
+           
+            foreach (double item in totals)
+            {
+               
+                <th>@item.ToString()</th>
+
+            }
+        }
+    </tr>
+
+
+
+</table>

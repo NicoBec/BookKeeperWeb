@@ -30,6 +30,34 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DescTxt" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BookKeeper.dbo.MonthlyTotals' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MonthlyTotals">
+          <Key>
+            <PropertyRef Name="TypeDesc" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Month" Type="nvarchar" MaxLength="30" />
+          <Property Name="TypeDesc" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="Total" Type="float" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Transactions">
+          <Key>
+            <PropertyRef Name="DescTxt" />
+            <PropertyRef Name="Desc" />
+            <PropertyRef Name="Expr1" />
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="Amount" />
+          </Key>
+          <Property Name="DescTxt" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Desc" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Expr1" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+        </EntityType>
         <Association Name="FK_Transaction_Category1">
           <End Role="Category" Type="Self.Category" Multiplicity="1" />
           <End Role="Transaction" Type="Self.Transaction" Multiplicity="*" />
@@ -58,6 +86,23 @@
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transaction" EntityType="Self.Transaction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Types" EntityType="Self.Types" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MonthlyTotals" EntityType="Self.MonthlyTotals" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [MonthlyTotals].[Month] AS [Month], 
+    [MonthlyTotals].[TypeDesc] AS [TypeDesc], 
+    [MonthlyTotals].[Type] AS [Type], 
+    [MonthlyTotals].[Total] AS [Total]
+    FROM [dbo].[MonthlyTotals] AS [MonthlyTotals]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Transactions" EntityType="Self.Transactions" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Transactions].[DescTxt] AS [DescTxt], 
+    [Transactions].[Desc] AS [Desc], 
+    [Transactions].[Expr1] AS [Expr1], 
+    [Transactions].[Date] AS [Date], 
+    [Transactions].[Amount] AS [Amount]
+    FROM [dbo].[Transactions] AS [Transactions]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_Transaction_Category1" Association="Self.FK_Transaction_Category1">
             <End Role="Category" EntitySet="Category" />
             <End Role="Transaction" EntitySet="Transaction" />
@@ -136,7 +181,34 @@
             <End Role="Types" EntitySet="Types" />
             <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
+          <FunctionImport Name="GetTransposedView" />
+          <EntitySet Name="MonthlyTotals" EntityType="BookKeeperModel.MonthlyTotal" />
+          <EntitySet Name="Transactions1" EntityType="BookKeeperModel.Transaction1" />
         </EntityContainer>
+        <EntityType Name="MonthlyTotal">
+          <Key>
+            <PropertyRef Name="TypeDesc" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Month" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="TypeDesc" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="Total" Type="Double" />
+        </EntityType>
+        <EntityType Name="Transaction1">
+          <Key>
+            <PropertyRef Name="DescTxt" />
+            <PropertyRef Name="Desc" />
+            <PropertyRef Name="Expr1" />
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="Amount" />
+          </Key>
+          <Property Name="DescTxt" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Desc" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Expr1" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -167,6 +239,27 @@
             <EntityTypeMapping TypeName="BookKeeperModel.Type">
               <MappingFragment StoreEntitySet="Types">
                 <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="DescTxt" ColumnName="DescTxt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MonthlyTotals">
+            <EntityTypeMapping TypeName="BookKeeperModel.MonthlyTotal">
+              <MappingFragment StoreEntitySet="MonthlyTotals">
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="TypeDesc" ColumnName="TypeDesc" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions1">
+            <EntityTypeMapping TypeName="BookKeeperModel.Transaction1">
+              <MappingFragment StoreEntitySet="Transactions">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Expr1" ColumnName="Expr1" />
+                <ScalarProperty Name="Desc" ColumnName="Desc" />
                 <ScalarProperty Name="DescTxt" ColumnName="DescTxt" />
               </MappingFragment>
             </EntityTypeMapping>

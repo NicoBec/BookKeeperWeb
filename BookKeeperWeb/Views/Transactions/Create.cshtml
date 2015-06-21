@@ -6,12 +6,65 @@
 }
 
 <h2>Create</h2>
+<script>
+    $(function () {
+       
 
+        jQuery.ui.autocomplete.prototype._resizeMenu = function () {
+            var ul = this.menu.element;
+            ul.outerWidth(this.element.outerWidth());
+        }
 
-@using (Html.BeginForm()) 
+        $("#DescTxt").autocomplete({
+           // search: function () { },
+            source: function (request, response) {
+                $.ajax(
+                {
+                    url: '@Url.Action("AutoDesc", "Transactions")',
+                    dataType: "json",
+                    data:
+                    {
+                        Like: $("#DescTxt").val(),
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                $.ajax(
+                            {
+                                url: '@Url.Action("GetTranByDesc", "Transactions")',
+                                dataType: "json",
+                                data:
+                                {
+                                    Desc: ui.item.value,
+                                },
+                                success: function (data) {
+                                    if (data) {
+                                        $('#Cat option[value="' + data.Cat + '"]').prop('selected', true);
+                                        $('#Type option[value="' + data.type + '"]').prop('selected', true);
+                                        $("#Date").val(data.Date)
+                                        $("#Amount").val(data.Amount)
+                                    }
+
+                                }
+                            });
+            }
+        });
+
+       
+
+        
+    });
+   
+</script>
+
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Transaction</h4>
         <hr />

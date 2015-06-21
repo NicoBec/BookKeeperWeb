@@ -12,6 +12,8 @@ namespace BookKeeperWeb.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class BookKeeperEntities : DbContext
     {
@@ -28,5 +30,12 @@ namespace BookKeeperWeb.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<Type> Types { get; set; }
+        public virtual DbSet<MonthlyTotal> MonthlyTotals { get; set; }
+        public virtual DbSet<Transaction1> Transactions1 { get; set; }
+    
+        public virtual int GetTransposedView()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTransposedView");
+        }
     }
 }

@@ -7,6 +7,10 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using BookKeeperWeb.Models;
+using Newtonsoft.Json;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Data.Entity.Core.EntityClient;
 
 namespace BookKeeperWeb.Controllers
 {
@@ -166,6 +170,78 @@ namespace BookKeeperWeb.Controllers
             ToTran.Type = FromTran.Type;
         }
 
+        public JsonResult AutoDesc(string like)
+        {
+            List<string> list = db.Database.SqlQuery<string>(@" SELECT distinct [DescTxt]
+                                        FROM [BookKeeper].[dbo].[Transaction]
+                                        Where [DescTxt] like '%" + like + "%' ").ToList();
+
+
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        // GET: Transactions
+        public ActionResult GetTransopsedViewExpence()
+        {
+
+            var ds = new DataSet();
+
+            using (var conn = new SqlConnection(db.Database.Connection.ConnectionString))
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "GetTransposedViewExpence";
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (var adapter = new SqlDataAdapter(cmd))
+                    {
+                        adapter.Fill(ds);
+                    }
+                }
+            }
+            return View("GetTransopsedView", ds);
+        }
+
+
+        public ActionResult GetTransopsedViewIncome()
+        {
+
+            var ds = new DataSet();
+
+            using (var conn = new SqlConnection(db.Database.Connection.ConnectionString))
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "GetTransposedViewIncome";
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (var adapter = new SqlDataAdapter(cmd))
+                    {
+                        adapter.Fill(ds);
+                    }
+                }
+            }
+            return View("GetTransopsedView", ds);
+        }
+
+
+        public ActionResult MonthlyTotals()
+        {
+            MonthTotalReport totals = new MonthTotalReport(db.MonthlyTotals.ToList());
+
+            return View(totals);
+        }
+
+
+        public JsonResult GetTranByDesc(string Desc)
+        {
+            Transaction trn = db.Transactions.OrderBy(item => item.ID).Where(item => item.DescTxt == Desc).ToList()[0];
+            dynamic tmp = new { Cat = trn.Cat, Date = trn.Date.ToString("yyyy/MM/dd"), type = trn.Type, Amount = trn.Amount };
+
+            return Json(tmp, JsonRequestBehavior.AllowGet);
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -176,4 +252,88 @@ namespace BookKeeperWeb.Controllers
             base.Dispose(disposing);
         }
     }
+
+    public class MonthTotalReportItem
+    {
+        public string Month { get; set; }
+        public string TypeDescInc { get; set; }
+        public string TypeDescExp { get; set; }
+        public double? Income { get; set; }
+        public double? Expence { get; set; }
+        public double? Total
+        {
+            get
+            {
+                return Income - Expence;
+            }
+            set{}
+        }
+        public string LossGain
+        {
+            get
+            {
+                if ((Income - Expence) > 0)
+                {
+                    return "Surplus";
+                }
+                else
+                {
+                    return "Loss";
+                }
+            }
+            set{}
+        }
+        public void addValues(MonthlyTotal Item)
+        {
+            Month = Item.Month;
+            if (Item.Type == 3)
+            {
+                Income = Item.Total;
+                TypeDescInc = Item.TypeDesc;
+            }
+            else if (Item.Type == 4)
+            {
+                Expence = Item.Total;
+                TypeDescExp = Item.TypeDesc;
+            }
+        }
+
+    }
+    public class MonthTotalReport
+    {
+       public List<MonthTotalReportItem> Items = new List<MonthTotalReportItem>();
+
+        public MonthTotalReport()
+        {
+
+        }
+
+        public MonthTotalReport(List<MonthlyTotal> Totals)
+        {
+            foreach (MonthlyTotal Item in Totals)
+            {
+                if (Items.Count == 0)
+                {
+                    MonthTotalReportItem newItem = new MonthTotalReportItem();
+                    newItem.addValues(Item);
+                    Items.Add(newItem);
+                }
+                else
+                {
+                    if (Items.Count(x => x.Month == Item.Month) > 0)
+                    {
+                        Items.Where(x => x.Month == Item.Month).SingleOrDefault().addValues(Item);
+                    }
+                    else
+                    {
+                        MonthTotalReportItem newItem = new MonthTotalReportItem();
+                        newItem.addValues(Item);
+                    }
+                }
+            }
+        }
+
+
+    }
+
 }

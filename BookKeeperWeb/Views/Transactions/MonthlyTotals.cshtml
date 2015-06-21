@@ -1,0 +1,29 @@
+﻿@model BookKeeperWeb.Controllers.MonthTotalReport
+@{
+    ViewBag.Title = "MonthlyTotals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>MonthlyTotals</h2>
+
+<table style="width:100%" border="1">
+
+    <tr>
+        <th>Month</th>
+        <th>Income</th>
+        <th>Expence</th>
+        <th>Total</th>
+        <th>Loss/Surplus</th>
+    </tr>
+    @foreach (BookKeeperWeb.Controllers.MonthTotalReportItem Item in Model.Items)
+    {
+        <tr>
+            <td>@Item.Month</td>
+            <td>R @Item.Income.ToString()</td>
+            <td>R @Item.Expence.ToString()</td>
+            <td>R @Item.Total.ToString()</td>
+            <td>@Item.LossGain</td>
+        </tr>
+    }
+    
+</table>

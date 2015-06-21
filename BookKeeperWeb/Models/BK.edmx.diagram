@@ -10,6 +10,8 @@
         <EntityTypeShape EntityType="BookKeeperModel.Type" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
         <AssociationConnector Association="BookKeeperModel.FK_Transaction_Category1" ManuallyRouted="false" />
         <AssociationConnector Association="BookKeeperModel.FK_Transaction_Types1" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="BookKeeperModel.MonthlyTotal" Width="1.5" PointX="6.25" PointY="5" />
+        <EntityTypeShape EntityType="BookKeeperModel.Transaction1" Width="1.5" PointX="8.25" PointY="1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
