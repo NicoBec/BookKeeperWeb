@@ -27,14 +27,29 @@
             <tr>
                 @foreach (var n in t.ItemArray)
                 {
-                    try
+                    if (counter > 4)
                     {
-                        totals[counter] += Convert.ToDouble(n.ToString());
+                        try
+                        {
+
+                            double number;
+
+
+                            if (Double.TryParse(n.ToString(), out number))
+                            {
+                                totals[counter] += number;
+                            }
+
+
+
+                            // totals[counter] += Convert.ToDouble(n.ToString());
+                        }
+                        catch (Exception)
+                        {
+                        }
+                       
                     }
-                    catch (Exception)
-                    {
-                    }
-                    counter++;
+                    counter++;  
                     <td>@n.ToString()</td>
                 }
             </tr>
@@ -43,14 +58,21 @@
     }
     <tr>
         @{
-           
+            int cnt = 0;
             foreach (double item in totals)
             {
-               
-                <th>@item.ToString()</th>
+                if (cnt > 4)
+                {
+                    <th>@item.ToString()</th>
+                }
+                else
+                {
+                    <th></th>
+                }
 
+                cnt++;
             }
-        }
+}
     </tr>
 
 
