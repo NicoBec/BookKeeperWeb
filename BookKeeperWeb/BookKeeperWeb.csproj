@@ -299,6 +299,7 @@
       <LastGenOutput>BK.cs</LastGenOutput>
     </Content>
     <Content Include="DBBackup\BookKeeper2.7z" />
+    <Content Include="DBBackup\BookKeeper5.7z" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />

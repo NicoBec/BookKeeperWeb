@@ -6,7 +6,16 @@
 
 <h2>MonthlyTotals</h2>
 
-<table style="width:100%" border="1">
+<style>
+    td{
+        padding-left: 10px;
+    }
+    th{
+        text-align:center;
+    }
+</style>
+
+<table style="width:100%;" border="1">
 
     <tr>
         <th>Month</th>
@@ -39,17 +48,18 @@
         total =  Math.Round(total.GetValueOrDefault(), 2); 
     }
     <tr>
-        <td>Total</td>
-        <td>R @IncomeTotal</td>
-        <td>R @ExpenceTotal</td>
-        <td>R @total</td>
+        <th>Total</th>
+        <th>R @IncomeTotal</th>
+        <th>R @ExpenceTotal</th>
+        <th>R @total</th>
+
         @if (IncomeTotal > ExpenceTotal)
         {
-            <td>Surplus</td>
+            <th>Surplus</th>
         }
         else
         {
-            <td>Loss</td>
+            <th>Loss</th>
         }
     </tr>
 
