@@ -138,29 +138,29 @@ namespace BookKeeperWeb.Controllers
 
 
 
-        public ActionResult SwopTran(int From, int To)
-        {
+        //public ActionResult SwopTran(int From, int To)
+        //{
 
-            while (From > To + 1)
-            {
-                Transaction FromTran = db.Transactions.Where(item => item.ID == From).SingleOrDefault();
-                Transaction ToTran = db.Transactions.Where(item => item.ID == From - 1).SingleOrDefault();
-                Transaction TempTran = new Transaction();
-                TempTran.Amount = FromTran.Amount;
-                TempTran.Cat = FromTran.Cat;
-                TempTran.Date = FromTran.Date;
-                TempTran.DescTxt = FromTran.DescTxt;
-                TempTran.Type = FromTran.Type;
+        //    while (From > To + 1)
+        //    {
+        //        Transaction FromTran = db.Transactions.Where(item => item.ID == From).SingleOrDefault();
+        //        Transaction ToTran = db.Transactions.Where(item => item.ID == From - 1).SingleOrDefault();
+        //        Transaction TempTran = new Transaction();
+        //        TempTran.Amount = FromTran.Amount;
+        //        TempTran.Cat = FromTran.Cat;
+        //        TempTran.Date = FromTran.Date;
+        //        TempTran.DescTxt = FromTran.DescTxt;
+        //        TempTran.Type = FromTran.Type;
 
 
-                swoptranatt(ref FromTran, ref ToTran);
-                swoptranatt(ref ToTran, ref TempTran);
-                db.SaveChanges();
-                From--;
-            }
+        //        swoptranatt(ref FromTran, ref ToTran);
+        //        swoptranatt(ref ToTran, ref TempTran);
+        //        db.SaveChanges();
+        //        From--;
+        //    }
 
-            return RedirectToAction("Index");
-        }
+        //    return RedirectToAction("Index");
+        //}
         private void swoptranatt(ref Transaction ToTran, ref Transaction FromTran)
         {
             ToTran.Amount = FromTran.Amount;
@@ -229,7 +229,9 @@ namespace BookKeeperWeb.Controllers
 
         public ActionResult MonthlyTotals()
         {
-            MonthTotalReport totals = new MonthTotalReport(db.MonthlyTotals.ToList());
+            List<GetYearTotals_Result> t = db.GetYearTotals().OrderBy(x => x.dttm).ToList();
+
+            MonthTotalReport totals = new MonthTotalReport(t);
 
             return View(totals);
         }
@@ -264,7 +266,7 @@ namespace BookKeeperWeb.Controllers
         {
             get
             {
-                return Income - Expence;
+                return Math.Round((Income - Expence).GetValueOrDefault(), 2); 
             }
             set{}
         }
@@ -283,17 +285,17 @@ namespace BookKeeperWeb.Controllers
             }
             set{}
         }
-        public void addValues(MonthlyTotal Item)
+        public void addValues(GetYearTotals_Result Item)
         {
             Month = Item.Month;
             if (Item.Type == 3)
             {
-                Income = Item.Total;
+                Income = Math.Round(Item.Total.GetValueOrDefault(), 2);
                 TypeDescInc = Item.TypeDesc;
             }
             else if (Item.Type == 4)
             {
-                Expence = Item.Total;
+                Expence = Math.Round(Item.Total.GetValueOrDefault(), 2);
                 TypeDescExp = Item.TypeDesc;
             }
         }
@@ -308,9 +310,9 @@ namespace BookKeeperWeb.Controllers
 
         }
 
-        public MonthTotalReport(List<MonthlyTotal> Totals)
+        public MonthTotalReport(List<GetYearTotals_Result> Totals)
         {
-            foreach (MonthlyTotal Item in Totals)
+            foreach (GetYearTotals_Result Item in Totals)
             {
                 if (Items.Count == 0)
                 {
@@ -328,6 +330,8 @@ namespace BookKeeperWeb.Controllers
                     {
                         MonthTotalReportItem newItem = new MonthTotalReportItem();
                         newItem.addValues(Item);
+                        Items.Add(newItem);
+
                     }
                 }
             }

@@ -15,7 +15,7 @@
     <AssemblyName>BookKeeperWeb</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -198,9 +198,18 @@
     <Compile Include="Models\Category.cs">
       <DependentUpon>BK.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\GetYearTotals_Result.cs">
+      <DependentUpon>BK.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\MonthlyTotal.cs">
+    <Compile Include="Models\MonthlyTotals.cs">
+      <DependentUpon>BK.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\MonthlyTotalv2.cs">
+      <DependentUpon>BK.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Test1_Result.cs">
       <DependentUpon>BK.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Transaction.cs">
@@ -305,7 +314,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -356,6 +367,11 @@
     <Content Include="Views\Transactions\Index.cshtml" />
     <Content Include="Views\Transactions\GetTransopsedView.cshtml" />
     <Content Include="Views\Transactions\MonthlyTotals.cshtml" />
+    <Content Include="Views\MonthlyTotals\Create.cshtml" />
+    <Content Include="Views\MonthlyTotals\Delete.cshtml" />
+    <Content Include="Views\MonthlyTotals\Details.cshtml" />
+    <Content Include="Views\MonthlyTotals\Edit.cshtml" />
+    <Content Include="Views\MonthlyTotals\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -389,7 +405,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>49373</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:49373/</IISUrl>
+          <IISUrl>http://localhost/BookKeeperWeb</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

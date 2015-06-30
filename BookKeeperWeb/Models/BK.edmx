@@ -31,12 +31,26 @@
           <Property Name="DescTxt" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'BookKeeper.dbo.MonthlyTotals' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
-        <EntityType Name="MonthlyTotals">
+warning 6002: The table/view 'BookKeeper.dbo.MonthlyTotal' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MonthlyTotal">
           <Key>
             <PropertyRef Name="TypeDesc" />
             <PropertyRef Name="Type" />
           </Key>
+          <Property Name="ID" Type="bigint" />
+          <Property Name="Month" Type="nvarchar" MaxLength="30" />
+          <Property Name="TypeDesc" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
+          <Property Name="Total" Type="float" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'BookKeeper.dbo.MonthlyTotalv2' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MonthlyTotalv2">
+          <Key>
+            <PropertyRef Name="TypeDesc" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="ID" Type="bigint" />
           <Property Name="Month" Type="nvarchar" MaxLength="30" />
           <Property Name="TypeDesc" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Type" Type="int" Nullable="false" />
@@ -82,17 +96,29 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="GetYearTotals" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="Test1" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="BookKeeperModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transaction" EntityType="Self.Transaction" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Types" EntityType="Self.Types" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="MonthlyTotals" EntityType="Self.MonthlyTotals" store:Type="Views" store:Schema="dbo">
+          <EntitySet Name="MonthlyTotal" EntityType="Self.MonthlyTotal" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
-    [MonthlyTotals].[Month] AS [Month], 
-    [MonthlyTotals].[TypeDesc] AS [TypeDesc], 
-    [MonthlyTotals].[Type] AS [Type], 
-    [MonthlyTotals].[Total] AS [Total]
-    FROM [dbo].[MonthlyTotals] AS [MonthlyTotals]</DefiningQuery>
+    [MonthlyTotal].[ID] AS [ID], 
+    [MonthlyTotal].[Month] AS [Month], 
+    [MonthlyTotal].[TypeDesc] AS [TypeDesc], 
+    [MonthlyTotal].[Type] AS [Type], 
+    [MonthlyTotal].[Total] AS [Total]
+    FROM [dbo].[MonthlyTotal] AS [MonthlyTotal]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="MonthlyTotalv2" EntityType="Self.MonthlyTotalv2" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [MonthlyTotalv2].[ID] AS [ID], 
+    [MonthlyTotalv2].[Month] AS [Month], 
+    [MonthlyTotalv2].[TypeDesc] AS [TypeDesc], 
+    [MonthlyTotalv2].[Type] AS [Type], 
+    [MonthlyTotalv2].[Total] AS [Total]
+    FROM [dbo].[MonthlyTotalv2] AS [MonthlyTotalv2]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Transactions" EntityType="Self.Transactions" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -182,19 +208,12 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
             <End Role="Transaction" EntitySet="Transactions" />
           </AssociationSet>
           <FunctionImport Name="GetTransposedView" />
-          <EntitySet Name="MonthlyTotals" EntityType="BookKeeperModel.MonthlyTotal" />
           <EntitySet Name="Transactions1" EntityType="BookKeeperModel.Transaction1" />
+          <EntitySet Name="MonthlyTotals" EntityType="BookKeeperModel.MonthlyTotals" />
+          <EntitySet Name="MonthlyTotalv2" EntityType="BookKeeperModel.MonthlyTotalv2" />
+          <FunctionImport Name="Test1" ReturnType="Collection(BookKeeperModel.Test1_Result)" />
+          <FunctionImport Name="GetYearTotals" ReturnType="Collection(BookKeeperModel.GetYearTotals_Result)" />
         </EntityContainer>
-        <EntityType Name="MonthlyTotal">
-          <Key>
-            <PropertyRef Name="TypeDesc" />
-            <PropertyRef Name="Type" />
-          </Key>
-          <Property Name="Month" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
-          <Property Name="TypeDesc" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Type" Type="Int32" Nullable="false" />
-          <Property Name="Total" Type="Double" />
-        </EntityType>
         <EntityType Name="Transaction1">
           <Key>
             <PropertyRef Name="DescTxt" />
@@ -209,6 +228,42 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Amount" Type="Double" Nullable="false" />
         </EntityType>
+        <EntityType Name="MonthlyTotals">
+          <Key>
+            <PropertyRef Name="TypeDesc" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="ID" Type="Int64" />
+          <Property Name="Month" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="TypeDesc" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="Total" Type="Double" />
+        </EntityType>
+        <EntityType Name="MonthlyTotalv2">
+          <Key>
+            <PropertyRef Name="TypeDesc" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="ID" Type="Int64" />
+          <Property Name="Month" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="TypeDesc" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
+          <Property Name="Total" Type="Double" />
+        </EntityType>
+        <ComplexType Name="Test1_Result">
+          <Property Type="Int64" Name="ID" Nullable="true" />
+          <Property Type="String" Name="Month" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="TypeDesc" Nullable="false" MaxLength="100" />
+          <Property Type="Int32" Name="Type" Nullable="false" />
+          <Property Type="Double" Name="Total" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetYearTotals_Result">
+          <Property Type="String" Name="Month" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="TypeDesc" Nullable="false" MaxLength="100" />
+          <Property Type="Int32" Name="Type" Nullable="false" />
+          <Property Type="Double" Name="Total" Nullable="true" />
+          <Property Type="DateTime" Name="dttm" Nullable="true" Precision="23" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -243,16 +298,6 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="MonthlyTotals">
-            <EntityTypeMapping TypeName="BookKeeperModel.MonthlyTotal">
-              <MappingFragment StoreEntitySet="MonthlyTotals">
-                <ScalarProperty Name="Total" ColumnName="Total" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="TypeDesc" ColumnName="TypeDesc" />
-                <ScalarProperty Name="Month" ColumnName="Month" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Transactions1">
             <EntityTypeMapping TypeName="BookKeeperModel.Transaction1">
               <MappingFragment StoreEntitySet="Transactions">
@@ -264,6 +309,50 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="MonthlyTotals">
+            <EntityTypeMapping TypeName="BookKeeperModel.MonthlyTotals">
+              <MappingFragment StoreEntitySet="MonthlyTotal">
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="TypeDesc" ColumnName="TypeDesc" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MonthlyTotalv2">
+            <EntityTypeMapping TypeName="BookKeeperModel.MonthlyTotalv2">
+              <MappingFragment StoreEntitySet="MonthlyTotalv2">
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="TypeDesc" ColumnName="TypeDesc" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Test1" FunctionName="BookKeeperModel.Store.Test1">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="BookKeeperModel.Test1_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="TypeDesc" ColumnName="TypeDesc" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetYearTotals" FunctionName="BookKeeperModel.Store.GetYearTotals">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="BookKeeperModel.GetYearTotals_Result">
+                <ScalarProperty Name="Month" ColumnName="Month" />
+                <ScalarProperty Name="TypeDesc" ColumnName="TypeDesc" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="dttm" ColumnName="dttm" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

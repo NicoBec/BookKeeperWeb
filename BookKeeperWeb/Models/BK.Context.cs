@@ -30,12 +30,23 @@ namespace BookKeeperWeb.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
         public virtual DbSet<Type> Types { get; set; }
-        public virtual DbSet<MonthlyTotal> MonthlyTotals { get; set; }
         public virtual DbSet<Transaction1> Transactions1 { get; set; }
+        public virtual DbSet<MonthlyTotals> MonthlyTotals { get; set; }
+        public virtual DbSet<MonthlyTotalv2> MonthlyTotalv2 { get; set; }
     
         public virtual int GetTransposedView()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTransposedView");
+        }
+    
+        public virtual ObjectResult<Test1_Result> Test1()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Test1_Result>("Test1");
+        }
+    
+        public virtual ObjectResult<GetYearTotals_Result> GetYearTotals()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetYearTotals_Result>("GetYearTotals");
         }
     }
 }

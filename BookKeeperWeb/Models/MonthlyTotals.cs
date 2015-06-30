@@ -12,8 +12,9 @@ namespace BookKeeperWeb.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class MonthlyTotal
+    public partial class MonthlyTotals
     {
+        public Nullable<long> ID { get; set; }
         public string Month { get; set; }
         public string TypeDesc { get; set; }
         public int Type { get; set; }

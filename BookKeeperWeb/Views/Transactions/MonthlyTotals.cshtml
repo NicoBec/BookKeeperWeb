@@ -15,8 +15,16 @@
         <th>Total</th>
         <th>Loss/Surplus</th>
     </tr>
+    @{
+        double? IncomeTotal = 0;
+        double? ExpenceTotal = 0;
+
+    }
+
     @foreach (BookKeeperWeb.Controllers.MonthTotalReportItem Item in Model.Items)
     {
+        IncomeTotal += Item.Income;
+        ExpenceTotal += Item.Expence;
         <tr>
             <td>@Item.Month</td>
             <td>R @Item.Income.ToString()</td>
@@ -25,5 +33,24 @@
             <td>@Item.LossGain</td>
         </tr>
     }
-    
+
+    @{
+        double? total = IncomeTotal - ExpenceTotal;
+        total =  Math.Round(total.GetValueOrDefault(), 2); 
+    }
+    <tr>
+        <td>Total</td>
+        <td>R @IncomeTotal</td>
+        <td>R @ExpenceTotal</td>
+        <td>R @total</td>
+        @if (IncomeTotal > ExpenceTotal)
+        {
+            <td>Surplus</td>
+        }
+        else
+        {
+            <td>Loss</td>
+        }
+    </tr>
+
 </table>
