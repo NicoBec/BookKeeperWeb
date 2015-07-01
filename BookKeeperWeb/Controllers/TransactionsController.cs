@@ -14,14 +14,23 @@ using System.Data.Entity.Core.EntityClient;
 
 namespace BookKeeperWeb.Controllers
 {
+     [CheckAccount]
     public class TransactionsController : Controller
     {
         private BookKeeperEntities db = new BookKeeperEntities();
 
+          public int getCID(){
+             int CID = 0;
+             int.TryParse(Url.RequestContext.HttpContext.Session["Account"].ToString(), out CID);
+
+             return CID;
+         }
+
         // GET: Transactions
         public ActionResult Index()
         {
-            var transactions = db.Transactions.Include(t => t.Category).Include(t => t.Type1);
+            int tmp = getCID();
+            var transactions = db.Transactions.Include(t => t.Category).Include(t => t.Type1).Where(x => x.CID == tmp);
             return View(transactions.ToList());
         }
 
@@ -43,7 +52,8 @@ namespace BookKeeperWeb.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            ViewBag.Cat = new SelectList(db.Categories, "ID", "Desc");
+            int CID = getCID();
+            ViewBag.Cat = new SelectList(db.Categories.Where(x => x.CID == CID), "ID", "Desc");
             ViewBag.Type = new SelectList(db.Types, "ID", "DescTxt");
             return View();
         }
@@ -57,6 +67,7 @@ namespace BookKeeperWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+                transaction.CID = getCID();
                 db.Transactions.Add(transaction);
                 db.SaveChanges();
                 return RedirectToAction("Create");
@@ -194,7 +205,7 @@ namespace BookKeeperWeb.Controllers
                 {
                     cmd.CommandText = "GetTransposedViewExpence";
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.Add(new SqlParameter("AccountID", getCID().ToString()));
                     using (var adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(ds);
@@ -216,7 +227,7 @@ namespace BookKeeperWeb.Controllers
                 {
                     cmd.CommandText = "GetTransposedViewIncome";
                     cmd.CommandType = CommandType.StoredProcedure;
-
+                    cmd.Parameters.Add(new SqlParameter("AccountID", getCID().ToString()));
                     using (var adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(ds);
@@ -229,7 +240,7 @@ namespace BookKeeperWeb.Controllers
 
         public ActionResult MonthlyTotals()
         {
-            List<GetYearTotals_Result> t = db.GetYearTotals().OrderBy(x => x.dttm).ToList();
+            List<GetYearTotals_Result> t = db.GetYearTotals(getCID()).OrderBy(x => x.dttm).ToList();
 
             MonthTotalReport totals = new MonthTotalReport(t);
 
@@ -239,7 +250,8 @@ namespace BookKeeperWeb.Controllers
 
         public JsonResult GetTranByDesc(string Desc)
         {
-            Transaction trn = db.Transactions.OrderBy(item => item.ID).Where(item => item.DescTxt == Desc).ToList()[0];
+            int CID = getCID();
+            Transaction trn = db.Transactions.OrderBy(item => item.ID).Where(item => item.DescTxt == Desc && item.CID == CID).ToList()[0];
             dynamic tmp = new { Cat = trn.Cat, Date = trn.Date.ToString("yyyy/MM/dd"), type = trn.Type, Amount = trn.Amount };
 
             return Json(tmp, JsonRequestBehavior.AllowGet);

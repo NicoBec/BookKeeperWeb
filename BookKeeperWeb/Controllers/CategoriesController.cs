@@ -10,14 +10,26 @@ using BookKeeperWeb.Models;
 
 namespace BookKeeperWeb.Controllers
 {
+     [CheckAccount]
     public class CategoriesController : Controller
     {
         private BookKeeperEntities db = new BookKeeperEntities();
 
+         public int getCID(){
+             int CID = 0;
+             int.TryParse(Url.RequestContext.HttpContext.Session["Account"].ToString(), out CID);
+
+             return CID;
+         }
+
+        
+
         // GET: Categories
         public ActionResult Index()
         {
-            return View(db.Categories.ToList());
+            int t = getCID();
+
+            return View(db.Categories.Where(x => x.CID == t ).ToList());
         }
 
         // GET: Categories/Details/5
@@ -50,6 +62,9 @@ namespace BookKeeperWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                category.CID = getCID();
+
                 db.Categories.Add(category);
                 db.SaveChanges();
                 return RedirectToAction("Index");

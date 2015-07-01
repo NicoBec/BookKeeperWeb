@@ -21,7 +21,9 @@ namespace BookKeeperWeb.Models
     
         public int ID { get; set; }
         public string DescTxt { get; set; }
+        public Nullable<int> CID { get; set; }
     
         public virtual ICollection<Transaction> Transactions { get; set; }
+        public virtual Account Account { get; set; }
     }
 }

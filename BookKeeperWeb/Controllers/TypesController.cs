@@ -10,13 +10,23 @@ using BookKeeperWeb.Models;
 
 namespace BookKeeperWeb.Controllers
 {
+    
     public class TypesController : Controller
     {
         private BookKeeperEntities db = new BookKeeperEntities();
 
+        //public int getCID()
+        //{
+        //    int CID = 0;
+        //    int.TryParse(Url.RequestContext.HttpContext.Session["Account"].ToString(), out CID);
+
+        //    return CID;
+        //}
+
         // GET: Types
         public ActionResult Index()
         {
+       
             return View(db.Types.ToList());
         }
 
@@ -50,6 +60,7 @@ namespace BookKeeperWeb.Controllers
         {
             if (ModelState.IsValid)
             {
+               // type.CID = getCID();
                 db.Types.Add(type);
                 db.SaveChanges();
                 return RedirectToAction("Index");

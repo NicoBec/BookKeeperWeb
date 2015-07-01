@@ -10,20 +10,13 @@
 namespace BookKeeperWeb.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Transaction
+    public partial class sp_helpdiagrams_Result
     {
+        public string Database { get; set; }
+        public string Name { get; set; }
         public int ID { get; set; }
-        public string DescTxt { get; set; }
-        public int Cat { get; set; }
-        public System.DateTime Date { get; set; }
-        public int Type { get; set; }
-        public double Amount { get; set; }
-        public Nullable<int> CID { get; set; }
-    
-        public virtual Category Category { get; set; }
-        public virtual Type Type1 { get; set; }
-        public virtual Account Account { get; set; }
+        public string Owner { get; set; }
+        public int OwnerID { get; set; }
     }
 }
