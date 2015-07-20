@@ -1,15 +1,14 @@
-﻿@model BookKeeperWeb.Controllers.MonthTotalReport
+﻿@using BookKeeperWeb.Controllers
+@model BookKeeperWeb.Controllers.MonthTotalReport
 @{
     ViewBag.Title = "MonthlyTotals";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>MonthlyTotals</h2>
+<h2>Monthly Totals (2014-2015)</h2>
 
 <style>
-    td{
-        padding-left: 10px;
-    }
+    
     th{
         text-align:center;
     }
@@ -35,11 +34,11 @@
         IncomeTotal += Item.Income;
         ExpenceTotal += Item.Expence;
         <tr>
-            <td>@Item.Month</td>
-            <td>R @Item.Income.ToString()</td>
-            <td>R @Item.Expence.ToString()</td>
-            <td>R @Item.Total.ToString()</td>
-            <td>@Item.LossGain</td>
+            <td style="padding-left: 10px;">@Item.Month</td>
+            <td class="randval">@Item.Income.Value.ToRand()</td>
+            <td class="randval">@Item.Expence.Value.ToRand()</td>
+            <td class="randval">@Item.Total.Value.ToRand()</td>
+            <td style ="text-align: center">@Item.LossGain</td>
         </tr>
     }
 
@@ -49,9 +48,9 @@
     }
     <tr>
         <th>Total</th>
-        <th>R @IncomeTotal</th>
-        <th>R @ExpenceTotal</th>
-        <th>R @total</th>
+        <th class="randval">@IncomeTotal.Value.ToRand()</th>
+        <th class="randval">@ExpenceTotal.Value.ToRand()</th>
+        <th class="randval">@total.Value.ToRand()</th>
 
         @if (IncomeTotal > ExpenceTotal)
         {

@@ -14,6 +14,7 @@ namespace BookKeeperWeb.Controllers
 
     public class CheckAccountAttribute : ActionFilterAttribute
     {
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             // var t = filterContext.RequestContext.HttpContext.Session["Account"];
@@ -63,6 +64,7 @@ namespace BookKeeperWeb.Controllers
         {
             // var t = RouteData.Values["test"];
 
+            ViewBag.CurrentAcc = getCID();
             return View(db.Accounts.ToList());
         }
 

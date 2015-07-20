@@ -11,6 +11,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Desc" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="StartBalance" Type="float" />
         </EntityType>
         <EntityType Name="Category">
           <Key>
@@ -155,9 +156,13 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
         <Function Name="fn_diagramobjects" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int" />
         <Function Name="GetTransposedViewExpence" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="AccountID" Type="int" Mode="In" />
+          <Parameter Name="StartDate" Type="date" Mode="In" />
+          <Parameter Name="EndDate" Type="date" Mode="In" />
         </Function>
         <Function Name="GetTransposedViewIncome" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="AccountID" Type="int" Mode="In" />
+          <Parameter Name="StartDate" Type="date" Mode="In" />
+          <Parameter Name="EndDate" Type="date" Mode="In" />
         </Function>
         <Function Name="GetYearTotals" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="AccountID" Type="int" Mode="In" />
@@ -328,7 +333,7 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
           <EntitySet Name="MonthlyTotalv2" EntityType="BookKeeperModel.MonthlyTotalv2" />
           <FunctionImport Name="Test1" ReturnType="Collection(BookKeeperModel.Test1_Result)" />
           <FunctionImport Name="GetYearTotals" ReturnType="Collection(BookKeeperModel.GetYearTotals_Result)" >
-            <Parameter Name="AccountID" Mode="In" Type="Int32" />
+          <Parameter Name="AccountID" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="Accounts" EntityType="BookKeeperModel.Account" />
           <EntitySet Name="sysdiagrams" EntityType="BookKeeperModel.sysdiagram" />
@@ -345,10 +350,14 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
             <End Role="Type" EntitySet="Types" />
           </AssociationSet>
           <FunctionImport Name="GetTransposedViewExpence" >
-            <Parameter Name="AccountID" Mode="In" Type="Int32" />
+          <Parameter Name="AccountID" Mode="In" Type="Int32" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="GetTransposedViewIncome" >
-            <Parameter Name="AccountID" Mode="In" Type="Int32" />
+          <Parameter Name="AccountID" Mode="In" Type="Int32" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="sp_alterdiagram">
             <Parameter Name="diagramname" Mode="In" Type="String" />
@@ -440,6 +449,7 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
           <NavigationProperty Name="Categories" Relationship="BookKeeperModel.FK_Category_Account" FromRole="Account" ToRole="Category" />
           <NavigationProperty Name="Transactions" Relationship="BookKeeperModel.FK_Transaction_Account" FromRole="Account" ToRole="Transaction" />
           <NavigationProperty Name="Types" Relationship="BookKeeperModel.FK_Types_Account" FromRole="Account" ToRole="Type" />
+          <Property Name="StartBalance" Type="Double" />
         </EntityType>
         <EntityType Name="sysdiagram">
           <Key>
@@ -593,6 +603,7 @@ warning 6002: The table/view 'BookKeeper.dbo.Transactions' does not have a prima
           <EntitySetMapping Name="Accounts">
             <EntityTypeMapping TypeName="BookKeeperModel.Account">
               <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="StartBalance" ColumnName="StartBalance" />
                 <ScalarProperty Name="Desc" ColumnName="Desc" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>

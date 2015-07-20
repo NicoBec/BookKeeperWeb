@@ -23,6 +23,7 @@ namespace BookKeeperWeb.Models
     
         public int ID { get; set; }
         public string Desc { get; set; }
+        public Nullable<double> StartBalance { get; set; }
     
         public virtual ICollection<Category> Categories { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }

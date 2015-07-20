@@ -1,0 +1,29 @@
+﻿<style>
+    .page-break {
+        page-break-after: always;
+    }
+
+    td{
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+</style>
+<div class="page-break"></div>
+@{
+    List<string> Dates = new List<string>() {"2014-03-01","2014-04-01","2014-05-01","2014-06-01","2014-07-01","2014-08-01","2014-09-01","2014-10-01","2014-11-01","2014-12-01","2015-01-01","2015-02-01"};
+    foreach (var t in Dates)
+    {
+        
+        @Html.Action("GetTransopsedViewExpence", "Transactions", new { sdate = t, ndate = "2014-04-01" })
+    }
+    
+    foreach (var t in Dates)
+    {
+
+        @Html.Action("GetTransopsedViewIncome", "Transactions", new { sdate = t, ndate = "2014-04-01" })
+    }
+    @Html.Action("MonthlyTotals", "Transactions")
+    
+}
+
+

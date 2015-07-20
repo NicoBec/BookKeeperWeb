@@ -44,10 +44,10 @@
         @Html.Action("LayoutAccount", "Accounts")
     </div>
 
-    <div class="container body-content">
+    <div class="container body-content" >
         @RenderBody()
         <hr />
-        <footer>
+        <footer style="display: none;">
             <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
         </footer>
     </div>

@@ -21,7 +21,15 @@
 
 @foreach (var item in Model) {
     <tr>
-        <td><a href="@Url.Action("SetActiveAccount", "Accounts", new { AccID = item.ID })"><span class="glyphicon glyphicon-off" style="color:maroon; font-size: 50px;"></span></a></td>
+        @if (ViewBag.CurrentAcc != item.ID)
+        {
+            <td><a href="@Url.Action("SetActiveAccount", "Accounts", new { AccID = item.ID })"><span class="glyphicon glyphicon-off" style="color:red; font-size: 50px;"></span></a></td>
+        }
+        else
+        {
+            <td><a href="@Url.Action("SetActiveAccount", "Accounts", new { AccID = item.ID })"><span class="glyphicon glyphicon-off" style="color:limegreen; font-size: 50px;"></span></a></td>
+        }
+      
         <td>
             @Html.DisplayFor(modelItem => item.Desc)
         </td>

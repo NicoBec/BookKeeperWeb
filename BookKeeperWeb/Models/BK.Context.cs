@@ -55,22 +55,38 @@ namespace BookKeeperWeb.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetYearTotals_Result>("GetYearTotals", accountIDParameter);
         }
     
-        public virtual int GetTransposedViewExpence(Nullable<int> accountID)
+        public virtual int GetTransposedViewExpence(Nullable<int> accountID, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate)
         {
             var accountIDParameter = accountID.HasValue ?
                 new ObjectParameter("AccountID", accountID) :
                 new ObjectParameter("AccountID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTransposedViewExpence", accountIDParameter);
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTransposedViewExpence", accountIDParameter, startDateParameter, endDateParameter);
         }
     
-        public virtual int GetTransposedViewIncome(Nullable<int> accountID)
+        public virtual int GetTransposedViewIncome(Nullable<int> accountID, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate)
         {
             var accountIDParameter = accountID.HasValue ?
                 new ObjectParameter("AccountID", accountID) :
                 new ObjectParameter("AccountID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTransposedViewIncome", accountIDParameter);
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("GetTransposedViewIncome", accountIDParameter, startDateParameter, endDateParameter);
         }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)

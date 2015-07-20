@@ -1,8 +1,9 @@
-﻿@model IEnumerable<BookKeeperWeb.Models.Transaction>
+﻿@using BookKeeperWeb.Controllers
+@model IEnumerable<BookKeeperWeb.Models.Transaction>
 
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+   // Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Index</h2>
@@ -30,12 +31,13 @@
         <th>
             @Html.DisplayNameFor(model => model.Type1.DescTxt)
         </th>
-        <th></th>
+        <th>Balance</th>
+        <th>Edit</th>
     </tr>
     @{
         double Income = 0;
         double Expence = 0;
-        double start = 735681.85;
+        double start = ViewBag.StartBalance;
     }
     @foreach (var item in Model)
     {
@@ -44,18 +46,18 @@
                 @Html.DisplayFor(modelItem => item.DescTxt)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Date)
+                @item.Date.ToMyString()
             </td>
             @if (item.Type != 3)
             {
                 <td style="color: red">
-                    R @Html.DisplayFor(modelItem => item.Amount)
+                    @item.Amount.ToRand()
                 </td>
             }
             else
             {
                 <td style="color: green">
-                    R @Html.DisplayFor(modelItem => item.Amount)
+                    @item.Amount.ToRand()
                 </td>
             }
        
@@ -79,7 +81,7 @@
                 @Html.DisplayFor(modelItem => item.Type1.DescTxt)
             </td>
             <td>
-            <td>R @Math.Round(start, 2)</td>
+            <td>@Math.Round(start, 2).ToRand()</td>
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
@@ -90,13 +92,13 @@
     }
     @{
         double Total = Math.Round((Income - Expence), 2);
-        double balance = Math.Round((735681.85 + Income - Expence), 2);
+        double balance = Math.Round((ViewBag.StartBalance + Income - Expence), 2);
     }
     <tr>
-        <td>Income: R @Income</td>
-        <td>Expence:R @Expence</td>
-        <td>Total: R @Total</td>
-        <td>Total: R @balance</td>
+        <td>Income: @Income.ToRand()</td>
+        <td>Expence:@Expence.ToRand()</td>
+        <td>Total: @Total.ToRand()</td>
+        <td>Total: @balance.ToRand()</td>
     </tr>
 </table>
 @*hello*@

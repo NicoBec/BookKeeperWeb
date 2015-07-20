@@ -22,3 +22,8 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.randval {
+    text-align: right;
+    padding-right: 10px;
+}

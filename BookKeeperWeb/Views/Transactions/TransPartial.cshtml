@@ -1,0 +1,101 @@
+﻿@using BookKeeperWeb.Controllers
+@model System.Data.DataSet
+
+<h2>@ViewBag.Title</h2>
+
+<table style="width:100%" border="1" class="page-break">
+
+    <tr>
+        @{
+            List<int> leaveOut = new List<int> { 1, 3, 5, 7 };
+            int counter2 = 0;
+
+            List<double> totals = new List<double>();
+            foreach (System.Data.DataColumn column in Model.Tables[0].Columns)
+            {
+                counter2++;
+                if (!leaveOut.Contains(counter2))
+                {
+                    totals.Add(0);
+                    <th>@column.ColumnName</th>
+                }
+
+            }
+        }
+    </tr>
+
+    @{
+
+        foreach (System.Data.DataRow t in Model.Tables[0].Rows)
+        {
+            int counter = 0;
+            counter2 = 0;
+            double tmp = 0;
+            bool dblFlag = false;
+            double number;
+            <tr>
+                @foreach (var n in t.ItemArray)
+                {
+                    counter2++;
+                    if (!leaveOut.Contains(counter2))
+                    {
+
+                        if (counter > 1)
+                        {
+                            try
+                            {
+                               
+
+                                if (Double.TryParse(n.ToString(), out number))
+                                {
+                                    totals[counter] += number;
+                                    dblFlag = true;
+                                    tmp = number;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+                        counter++;
+                        if (counter == 2)
+                        {
+                            <td>@n.ToString().Substring(0, 10)</td>
+                        }
+                        else
+                        {
+                            if (dblFlag)
+                            {
+                                <td class="randval">@tmp.ToRand()</td>
+                            }
+                            else
+                            {
+                                <td>@n.ToString()</td>
+                            }
+                            
+                        }
+                        tmp = 0;
+                    }
+                }
+            </tr>
+        }
+    }
+    <tr>
+        @{
+            int cnt = 0;
+            foreach (double item in totals)
+            {
+                if (cnt > 1)
+                {
+                    <th class="randval">@item.ToRand()</th>
+                }
+                else
+                {
+                    <th></th>
+                }
+
+                cnt++;
+            }
+        }
+    </tr>
+</table>

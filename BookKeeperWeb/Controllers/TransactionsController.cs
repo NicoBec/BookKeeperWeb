@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Rotativa.Core;
+using Rotativa.Core.Options;
+using Rotativa.MVC;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -11,26 +14,31 @@ using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Data.Entity.Core.EntityClient;
+using System.Globalization;
+
 
 namespace BookKeeperWeb.Controllers
 {
-     [CheckAccount]
+    [CheckAccount]
     public class TransactionsController : Controller
     {
         private BookKeeperEntities db = new BookKeeperEntities();
 
-          public int getCID(){
-             int CID = 0;
-             int.TryParse(Url.RequestContext.HttpContext.Session["Account"].ToString(), out CID);
-
-             return CID;
-         }
+        public int getCID()
+        {
+            int CID = 0;
+            int.TryParse(Url.RequestContext.HttpContext.Session["Account"].ToString(), out CID);
+            return CID;
+        }
 
         // GET: Transactions
         public ActionResult Index()
         {
             int tmp = getCID();
+            ViewBag.StartBalance = db.Accounts.Where(x => x.ID == tmp).Single().StartBalance;
             var transactions = db.Transactions.Include(t => t.Category).Include(t => t.Type1).Where(x => x.CID == tmp);
+
+
             return View(transactions.ToList());
         }
 
@@ -147,6 +155,50 @@ namespace BookKeeperWeb.Controllers
             return View("Index", transactions.ToList());
         }
 
+        public ActionResult ReportItemisedMonthly2(int month = 5)
+        {
+            var transactions = db.Transactions.Where(item => item.Date.Month == month);
+
+
+            return View();
+        }
+
+
+        //PDF
+        public ActionResult ReportItemisedMonthlyPDF(string sdate = "2014-03-01", string ndate = "2014-04-01")
+        {
+            var ds = new DataSet();
+
+            using (var conn = new SqlConnection(db.Database.Connection.ConnectionString))
+            {
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "GetTransposedViewExpence";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("AccountID", getCID().ToString()));
+                    cmd.Parameters.Add(new SqlParameter("StartDate", sdate));
+                    cmd.Parameters.Add(new SqlParameter("EndDate", ndate));
+                    using (var adapter = new SqlDataAdapter(cmd))
+                    {
+                        adapter.Fill(ds);
+                    }
+                }
+            }
+
+            var newDate = DateTime.ParseExact(sdate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var month = newDate.ToString("MMMM", CultureInfo.InvariantCulture);
+
+            ViewBag.Title = "Kasboek uitgawes   " + month + " " + sdate.Substring(0, 4);
+
+            // return View("GetTransopsedView", ds);
+
+            return new ViewAsPdf("TransopsedSum")
+            {
+                FileName = "Test.pdf",
+                RotativaOptions = { PageOrientation = Orientation.Landscape, PageSize = Size.A3 }
+            };
+        }
+
 
 
         //public ActionResult SwopTran(int From, int To)
@@ -194,7 +246,7 @@ namespace BookKeeperWeb.Controllers
 
 
         // GET: Transactions
-        public ActionResult GetTransopsedViewExpence()
+        public ActionResult GetTransopsedViewExpence(string sdate = "2014-03-01")
         {
 
             var ds = new DataSet();
@@ -206,17 +258,37 @@ namespace BookKeeperWeb.Controllers
                     cmd.CommandText = "GetTransposedViewExpence";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add(new SqlParameter("AccountID", getCID().ToString()));
+                    cmd.Parameters.Add(new SqlParameter("StartDate", sdate));
+                    cmd.Parameters.Add(new SqlParameter("EndDate", getNextDateString(sdate)));
                     using (var adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(ds);
                     }
                 }
             }
-            return View("GetTransopsedView", ds);
+
+            var newDate = DateTime.ParseExact(sdate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var month = newDate.ToString("MMMM", CultureInfo.InvariantCulture);
+
+            ViewBag.Title = "Kasboek uitgawes   " + month + " " + sdate.Substring(0, 4);
+
+            return View("TransPartial", ds);
         }
 
 
-        public ActionResult GetTransopsedViewIncome()
+        public string getNextDateString(string sdate)
+        {
+            DateTime Start = DateTime.ParseExact(sdate,
+                                        "yyyy-MM-dd",
+                                        CultureInfo.InvariantCulture,
+                                        DateTimeStyles.None);
+            DateTime end = Start.AddMonths(1);
+
+            return end.ToString("yyyy-MM-dd");
+        }
+
+
+        public ActionResult GetTransopsedViewIncome(string sdate = "2014-03-01")
         {
 
             var ds = new DataSet();
@@ -228,13 +300,20 @@ namespace BookKeeperWeb.Controllers
                     cmd.CommandText = "GetTransposedViewIncome";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add(new SqlParameter("AccountID", getCID().ToString()));
+                    cmd.Parameters.Add(new SqlParameter("StartDate", sdate));
+                    cmd.Parameters.Add(new SqlParameter("EndDate", getNextDateString(sdate)));
                     using (var adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(ds);
                     }
                 }
             }
-            return View("GetTransopsedView", ds);
+            var newDate = DateTime.ParseExact(sdate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var month = newDate.ToString("MMMM", CultureInfo.InvariantCulture);
+
+            ViewBag.Title = "Kasboek Inkomste    " + month + " " + sdate.Substring(0, 4);
+
+            return View("TransPartial", ds);
         }
 
 
@@ -278,9 +357,9 @@ namespace BookKeeperWeb.Controllers
         {
             get
             {
-                return Math.Round((Income - Expence).GetValueOrDefault(), 2); 
+                return Math.Round((Income - Expence).GetValueOrDefault(), 2);
             }
-            set{}
+            set { }
         }
         public string LossGain
         {
@@ -295,7 +374,7 @@ namespace BookKeeperWeb.Controllers
                     return "Loss";
                 }
             }
-            set{}
+            set { }
         }
         public void addValues(GetYearTotals_Result Item)
         {
@@ -315,7 +394,7 @@ namespace BookKeeperWeb.Controllers
     }
     public class MonthTotalReport
     {
-       public List<MonthTotalReportItem> Items = new List<MonthTotalReportItem>();
+        public List<MonthTotalReportItem> Items = new List<MonthTotalReportItem>();
 
         public MonthTotalReport()
         {
@@ -351,5 +430,31 @@ namespace BookKeeperWeb.Controllers
 
 
     }
+    public static class extentions
+    {
+        public static string ToRand(this double value)
+        {
+            String s = String.Format("{0:#,##0.00}", value);
 
+            //NumberFormatInfo nfi = (NumberFormatInfo)
+            //CultureInfo.InvariantCulture.NumberFormat.Clone();
+            //nfi.NumberGroupSeparator = " ";
+
+            NumberFormatInfo nfi = new NumberFormatInfo { NumberGroupSeparator = " ", NumberDecimalDigits = 2 };
+            value.ToString("n", nfi); // 12 345.00
+
+
+            return "R" + value.ToString("n", nfi); // 12 345.00
+        }
+
+        public static string ToMyString(this DateTime Item)
+        {
+            Item.ToString("yyyy-MM-dd");
+
+            return Item.ToString("yyyy-MM-dd");
+        }
+
+
+    }
 }
+
